@@ -35,7 +35,10 @@ app.use(express.json());
 
 app.post('/location', async (req, res) => {
     const data = req.body;
-    const specialUserId = process.env.LINE_SPECIAL_USER_ID_2;
+    const specialUserIds = [
+        process.env.LINE_SPECIAL_USER_ID_1,
+        process.env.LINE_SPECIAL_USER_ID_2
+    ];
 
     try {
         // console.log(data);
@@ -53,7 +56,8 @@ app.post('/location', async (req, res) => {
                 console.log(`ジオフェンシング：\n\t状態: エリア内\n\tエリア: ${data.desc}\n\t現在地: ${currAdress}`);
                 pushWebhook("進入通知", "指定のエリアに進入しました。", geofenceWebhook, DISCORD_WEBHOOK_URL_LOCATION, "15128606");
 
-                noticeEnter(specialUserId, data.desc, currAdress);
+                noticeEnter(specialUserIds, data.desc, currAdress);
+
             } else if (data.event === "leave") {
                 console.log(`ジオフェンシング：\n\t状態: エリア外\n\tエリア: ${data.desc}\n\t現在地: ${currAdress}`);
                 pushWebhook("退出通知", "指定のエリアから退出しました。", geofenceWebhook, DISCORD_WEBHOOK_URL_LOCATION, "15128606");
@@ -117,15 +121,15 @@ function lineBroadcastMessage(message) {
     });
 }
 
-function linePushMessage(userId, message) {
-    if (!message || !userId) {
+function linePushMessage(userIds, message) {
+    if (!message || !userIds) {
         return;
     }
 
     // console.log(userId, message);
 
     client.pushMessage({
-        to: userId,
+        to: userIds,
         messages: [
             {
                 type: 'text',
@@ -135,7 +139,7 @@ function linePushMessage(userId, message) {
     });
 }
 
-function noticeEnter(userId, area, addr) {
+function noticeEnter(userIds, area, addr) {
     if (!userId || !area || !addr) {
         return;
     }
@@ -161,7 +165,7 @@ function noticeEnter(userId, area, addr) {
         }
         const message = `${nowArea}\n現在地: ${addr}`;
 
-        linePushMessage(userId, message);
+        linePushMessage(userIds, message);
     }
 }
 
