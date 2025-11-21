@@ -88,7 +88,7 @@ async function handleEvent(event) {
     // 返信メッセージを作成
     const echo = { 
         type: 'text', 
-        text: `開発：北野\n2025年11月 開始` 
+        text: `` 
     };
     // 返信を送信
     return client.replyMessage({
@@ -156,8 +156,8 @@ function noticeEnter(userIds, area, addr) {
             case "home":
                 nowArea = "もうすぐ家着きます";
                 break;
-            case "sogawa":
-                nowArea = "今総曲輪あたりにいます";
+            case "":
+                nowArea = "今あたりにいます";
                 break;
             default:
                 console.log("undefined area");
@@ -224,7 +224,3 @@ async function pushWebhook(title, desc, message, url, color) {
         console.error('Webhook送信エラー', error.message);
     }
 }
-
-module.exports =  {
-    linePushMessage: linePushMessage
-};
